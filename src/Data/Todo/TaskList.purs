@@ -2,7 +2,7 @@ module Data.Todo.TaskList where
 
 import Data.Todo.Ref (Ref)
 import Data.Todo.Task (Task)
-import Data.Todo.Boundary (Emoji, SingleLineText)
+import Data.Todo.Boundary (Emoji, SingleLineNonBlankText)
 
 data TaskList = TaskList
     { title :: TaskListTitle
@@ -10,7 +10,7 @@ data TaskList = TaskList
     , taskRefs :: Array (Ref Task)
     , sortOrder :: SortOrder }
 
-data TaskListTitle = TaskListTitle SingleLineText
+data TaskListTitle = TaskListTitle SingleLineNonBlankText
 
 data TaskListIcon
     = TaskListIcon Emoji
