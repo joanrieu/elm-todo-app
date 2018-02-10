@@ -1,19 +1,18 @@
-module Data.Todo.Task (Task) where
+module Data.Todo.Task where
 
 import Data.Todo.Ref (Ref)
-import Data.Todo.Boundary (SingleLineText, MultiLineText, Time, Date)
+import Data.Todo.Boundary (Date, MultiLineText, SingleLineText, Time)
 
-data Task = Task {
-    ref :: Ref Task,
-    title :: Title,
-    creationDate :: TimeAndDate,
-    completion :: Completion,
-    reminder :: Reminder,
-    dueDate :: DueDate,
-    description :: Description
-}
+data Task = Task
+    { ref :: Ref Task
+    , title :: TaskTitle
+    , creationDate :: TimeAndDate
+    , completion :: Completion
+    , reminder :: Reminder
+    , dueDate :: DueDate
+    , description :: TaskDescription }
 
-data Title = Title SingleLineText
+data TaskTitle = TaskTitle SingleLineText
 
 data CreationDate = CreationDate TimeAndDate
 
@@ -39,4 +38,4 @@ data Recurrence
     | EachMonth
     | EachYear
 
-data Description = Description MultiLineText
+data TaskDescription = TaskDescription MultiLineText

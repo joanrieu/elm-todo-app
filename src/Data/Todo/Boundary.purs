@@ -1,7 +1,7 @@
-module Data.Todo.Boundary (Emoji, SingleLineText, MultiLineText, Time, Date) where
+module Data.Todo.Boundary where
 
-data Emoji = Emoji String
-data SingleLineText = SingleLineText String
-data MultiLineText = MultiLineText String
-data Time = Time { hour :: Int, minute :: Int }
-data Date = Date { day :: Int, month :: Int, year :: Int }
+type Emoji = String
+type SingleLineText = String
+type MultiLineText = String
+type Time = { hour :: Int, minute :: Int }
+type Date = { day :: Int, month :: Int, year :: Int }

@@ -1,18 +1,20 @@
-module Data.Todo.TaskList (TaskList) where
+module Data.Todo.TaskList where
 
 import Data.Todo.Ref (Ref)
 import Data.Todo.Task (Task)
 import Data.Todo.Boundary (Emoji, SingleLineText)
 
-data TaskList = TaskList {
-    name :: Title,
-    tasks :: Array (Ref Task),
-    sortOrder :: SortOrder
-}
+data TaskList = TaskList
+    { title :: TaskListTitle
+    , icon :: TaskListIcon
+    , taskRefs :: Array (Ref Task)
+    , sortOrder :: SortOrder }
 
-data Title
-    = Title SingleLineText
-    | EmojiTitle Emoji SingleLineText
+data TaskListTitle = TaskListTitle SingleLineText
+
+data TaskListIcon
+    = TaskListIcon Emoji
+    | NoTaskListIcon
 
 data SortOrder
     = CustomOrder
