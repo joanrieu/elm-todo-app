@@ -1,14 +1,16 @@
 module Data.Todo.TaskList where
 
-import Data.Todo.Ref (Ref)
-import Data.Todo.Task (Task)
-import Data.Todo.Boundary (Emoji, SingleLineNonBlankText)
+import Data.Todo.Task
+import Data.Todo.Boundary
 
 data TaskList = TaskList
-    { title :: TaskListTitle
+    { id :: TaskListId
+    , title :: TaskListTitle
     , icon :: TaskListIcon
-    , taskRefs :: Array (Ref Task)
+    , taskRefs :: Array TaskId
     , sortOrder :: SortOrder }
+
+newtype TaskListId = TaskListId UUID
 
 data TaskListTitle = TaskListTitle SingleLineNonBlankText
 

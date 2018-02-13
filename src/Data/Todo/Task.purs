@@ -1,30 +1,29 @@
 module Data.Todo.Task where
 
-import Data.Todo.Ref (Ref)
-import Data.Todo.Boundary (Date, MultiLineMaybeBlankText, SingleLineNonBlankText, Time)
+import Data.Todo.Boundary
 
 data Task = Task
-    { ref :: Ref Task
+    { id :: TaskId
+    , creationDate :: CreationDate
     , title :: TaskTitle
-    , creationDate :: TimeAndDate
     , completion :: Completion
     , reminder :: Reminder
     , dueDate :: DueDate
     , description :: TaskDescription }
 
+newtype TaskId = TaskId UUID
+
 data TaskTitle = TaskTitle SingleLineNonBlankText
 
-data CreationDate = CreationDate TimeAndDate
+data CreationDate = CreationDate Date
 
 data Completion
     = ToDo
-    | Done TimeAndDate
+    | Done Date
 
 data Reminder
     = NoReminder
-    | Reminder TimeAndDate 
-
-data TimeAndDate = TimeAndDate Time Date
+    | Reminder Date Time
 
 data DueDate
     = NoDueDate
@@ -39,3 +38,13 @@ data Recurrence
     | EachYear
 
 data TaskDescription = TaskDescription MultiLineMaybeBlankText
+
+createTask :: TaskId -> CreationDate -> TaskTitle -> Task
+createTask id creationDate title = Task
+    { id
+    , title
+    , creationDate
+    , completion: ToDo
+    , reminder: NoReminder
+    , dueDate: NoDueDate
+    , description: TaskDescription "" }
