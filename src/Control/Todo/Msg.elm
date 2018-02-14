@@ -1,9 +1,10 @@
-module Control.Todo.Msg where
+module Control.Todo.Msg exposing (..)
 
-import Data.Todo.Task (DueDate, Reminder, TaskDescription, TaskId, TaskTitle)
-import Data.Todo.TaskList (SortOrder, TaskListIcon, TaskListId, TaskListTitle)
+import Data.Todo.Task exposing (..)
+import Data.Todo.TaskList exposing (..)
 
-data Msg
+
+type Msg
     = CreateTask TaskTitle TaskListId
     | CheckTask TaskId
     | UncheckTask TaskId
