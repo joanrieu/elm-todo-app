@@ -4,22 +4,21 @@ import Data.Todo.Task exposing (..)
 import Data.Todo.Boundary exposing (..)
 
 
-type TaskList
-    = TaskList
-        { id : TaskListId
-        , title : TaskListTitle
-        , icon : TaskListIcon
-        , taskRefs : List TaskId
-        , sortOrder : SortOrder
-        }
+type alias TaskList =
+    { id : TaskListId
+    , title : TaskListTitle
+    , icon : TaskListIcon
+    , taskRefs : List TaskId
+    , sortOrder : SortOrder
+    }
 
 
 type alias TaskListId =
     UUID
 
 
-type TaskListTitle
-    = TaskListTitle SingleLineNonBlankText
+type alias TaskListTitle =
+    SingleLineNonBlankText
 
 
 type TaskListIcon

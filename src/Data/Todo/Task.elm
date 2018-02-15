@@ -3,28 +3,27 @@ module Data.Todo.Task exposing (..)
 import Data.Todo.Boundary exposing (..)
 
 
-type Task
-    = Task
-        { id : TaskId
-        , creationDate : CreationDate
-        , title : TaskTitle
-        , completion : Completion
-        , reminder : Reminder
-        , dueDate : DueDate
-        , description : TaskDescription
-        }
+type alias Task =
+    { id : TaskId
+    , creationDate : CreationDate
+    , title : TaskTitle
+    , completion : Completion
+    , reminder : Reminder
+    , dueDate : DueDate
+    , description : TaskDescription
+    }
 
 
 type alias TaskId =
     UUID
 
 
-type TaskTitle
-    = TaskTitle SingleLineNonBlankText
+type alias TaskTitle =
+    SingleLineNonBlankText
 
 
-type CreationDate
-    = CreationDate Date
+type alias CreationDate =
+    Date
 
 
 type Completion
@@ -51,18 +50,17 @@ type Recurrence
     | EachYear
 
 
-type TaskDescription
-    = TaskDescription MultiLineMaybeBlankText
+type alias TaskDescription =
+    MultiLineMaybeBlankText
 
 
 createTask : TaskId -> CreationDate -> TaskTitle -> Task
 createTask id creationDate title =
-    Task
-        { id = id
-        , title = title
-        , creationDate = creationDate
-        , completion = ToDo
-        , reminder = NoReminder
-        , dueDate = NoDueDate
-        , description = TaskDescription ""
-        }
+    { id = id
+    , title = title
+    , creationDate = creationDate
+    , completion = ToDo
+    , reminder = NoReminder
+    , dueDate = NoDueDate
+    , description = ""
+    }

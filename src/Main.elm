@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Events exposing (..)
 import Data.Todo.Task exposing (..)
 import Data.Todo.TaskList exposing (..)
 
@@ -23,13 +24,12 @@ type alias Model =
 init : Model
 init =
     { taskLists =
-        [ TaskList
-            { id = "today"
-            , title = TaskListTitle "Today"
-            , icon = NoTaskListIcon
-            , taskRefs = []
-            , sortOrder = CustomOrder
-            }
+        [ { id = "today"
+          , title = "Today"
+          , icon = NoTaskListIcon
+          , taskRefs = []
+          , sortOrder = CustomOrder
+          }
         ]
     , tasks = []
     }
@@ -56,13 +56,13 @@ type Msg
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        CreateTask name taskListRef ->
+        CreateTask title taskListRef ->
             { model
                 | tasks =
                     [ createTask
                         "mytask"
-                        (CreationDate { day = 1, month = 12, year = 2017 })
-                        (TaskTitle "Do something!")
+                        { day = 1, month = 12, year = 2017 }
+                        title
                     ]
             }
 
@@ -72,5 +72,23 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ text "Todo" ]
+    let
+        viewTaskList : Model -> TaskList -> Html Msg
+        viewTaskList model taskList =
+            div []
+                [ div []
+                    [ text taskList.title ]
+                , div []
+                    (List.map viewInlineTask model.tasks)
+                , div []
+                    [ button [ (onClick (CreateTask "abc" "def")) ]
+                        [ text "Add task" ]
+                    ]
+                ]
+
+        viewInlineTask : Task -> Html Msg
+        viewInlineTask task =
+            div [] [ text task.title ]
+    in
+        div []
+            (List.map (viewTaskList model) model.taskLists)
