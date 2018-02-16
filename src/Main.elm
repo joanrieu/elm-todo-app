@@ -15,27 +15,43 @@ main =
         }
 
 
-type alias Model =
+type alias TodoModel =
     { taskLists : List TaskList
     , tasks : List Task
     }
 
 
-init : Model
-init =
-    { taskLists =
-        [ { id = "today"
-          , title = "Today"
-          , icon = NoTaskListIcon
-          , taskRefs = []
-          , sortOrder = CustomOrder
-          }
-        ]
-    , tasks = []
+type alias ViewModel =
+    { openTaskListId : TaskListId
     }
 
 
-type Msg
+type alias Model =
+    { todo : TodoModel
+    , view : ViewModel
+    }
+
+
+init : Model
+init =
+    { todo =
+        { taskLists =
+            [ { id = "today"
+              , title = "Today"
+              , icon = NoTaskListIcon
+              , taskRefs = []
+              , sortOrder = CustomOrder
+              }
+            ]
+        , tasks = []
+        }
+    , view =
+        { openTaskListId = "today"
+        }
+    }
+
+
+type TodoMsg
     = CreateTask TaskTitle TaskListId
     | CheckTask TaskId
     | UncheckTask TaskId
@@ -53,18 +69,40 @@ type Msg
     | DeleteTaskList TaskListId
 
 
-update : Msg -> Model -> Model
-update msg model =
+type ViewMsg
+    = OpenTaskList TaskListId
+
+
+type Msg
+    = TodoMsg TodoMsg
+    | ViewMsg ViewMsg
+
+
+updateTodo : TodoMsg -> TodoModel -> TodoModel
+updateTodo msg model =
     case msg of
         CreateTask title taskListRef ->
-            { model
-                | tasks =
-                    [ createTask
+            let
+                task =
+                    createTask
                         "mytask"
                         { day = 1, month = 12, year = 2017 }
                         title
-                    ]
-            }
+
+                tasks =
+                    task :: model.tasks
+            in
+                { model | tasks = tasks }
+
+        _ ->
+            model
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        TodoMsg msg ->
+            { model | todo = updateTodo msg model.todo }
 
         _ ->
             model
@@ -79,9 +117,9 @@ view model =
                 [ div []
                     [ text taskList.title ]
                 , div []
-                    (List.map viewInlineTask model.tasks)
+                    (List.map viewInlineTask model.todo.tasks)
                 , div []
-                    [ button [ (onClick (CreateTask "abc" "def")) ]
+                    [ button [ (onClick (TodoMsg (CreateTask "abc" "def"))) ]
                         [ text "Add task" ]
                     ]
                 ]
@@ -91,4 +129,4 @@ view model =
             div [] [ text task.title ]
     in
         div []
-            (List.map (viewTaskList model) model.taskLists)
+            (List.map (viewTaskList model) model.todo.taskLists)
