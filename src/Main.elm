@@ -108,25 +108,39 @@ update msg model =
             model
 
 
+viewTaskList : Model -> TaskList -> Html Msg
+viewTaskList model taskList =
+    div []
+        [ div []
+            [ text taskList.title ]
+        , div []
+            (List.map viewInlineTask model.todo.tasks)
+        , div []
+            [ button [ (onClick (TodoMsg (CreateTask "abc" "def"))) ]
+                [ text "Add task" ]
+            ]
+        ]
+
+
+viewInlineTask : Task -> Html Msg
+viewInlineTask task =
+    div [] [ text task.title ]
+
+
 view : Model -> Html Msg
 view model =
     let
-        viewTaskList : Model -> TaskList -> Html Msg
-        viewTaskList model taskList =
-            div []
-                [ div []
-                    [ text taskList.title ]
-                , div []
-                    (List.map viewInlineTask model.todo.tasks)
-                , div []
-                    [ button [ (onClick (TodoMsg (CreateTask "abc" "def"))) ]
-                        [ text "Add task" ]
-                    ]
-                ]
+        isSelectedTaskList taskList =
+            taskList.id == model.view.openTaskListId
 
-        viewInlineTask : Task -> Html Msg
-        viewInlineTask task =
-            div [] [ text task.title ]
+        openTaskList =
+            model.todo.taskLists
+                |> List.filter isSelectedTaskList
+                |> List.head
+
+        taskListView =
+            openTaskList
+                |> Maybe.map (viewTaskList model)
     in
         div []
-            (List.map (viewTaskList model) model.todo.taskLists)
+            [ Maybe.withDefault (text "No open task list") taskListView ]
