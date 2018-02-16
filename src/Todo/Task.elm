@@ -1,6 +1,6 @@
-module Data.Todo.Task exposing (..)
+module Todo.Task exposing (..)
 
-import Data.Todo.Boundary exposing (..)
+import Todo.Boundary exposing (..)
 
 
 type alias Task =

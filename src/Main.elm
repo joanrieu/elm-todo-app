@@ -2,8 +2,8 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Events exposing (..)
-import Data.Todo.Task exposing (..)
-import Data.Todo.TaskList exposing (..)
+import Todo.Task exposing (..)
+import Todo.TaskList exposing (..)
 
 
 main : Program Never Model Msg

@@ -1,4 +1,4 @@
-module Data.Todo.Boundary exposing (..)
+module Todo.Boundary exposing (..)
 
 
 type alias UUID =
