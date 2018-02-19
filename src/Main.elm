@@ -1,7 +1,9 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Style exposing (..)
 import Todo.Task exposing (..)
 import Todo.TaskList exposing (..)
 
@@ -111,7 +113,12 @@ update msg model =
 viewTaskList : Model -> TaskList -> Html Msg
 viewTaskList model taskList =
     div []
-        [ div []
+        [ div
+            [ style
+                [ backgroundColor "blue"
+                , color "white"
+                ]
+            ]
             [ text taskList.title ]
         , div []
             (List.map viewInlineTask model.todo.tasks)
@@ -130,17 +137,18 @@ viewInlineTask task =
 view : Model -> Html Msg
 view model =
     let
-        isSelectedTaskList taskList =
+        isOpenTaskList taskList =
             taskList.id == model.view.openTaskListId
 
         openTaskList =
             model.todo.taskLists
-                |> List.filter isSelectedTaskList
+                |> List.filter isOpenTaskList
                 |> List.head
 
         taskListView =
             openTaskList
                 |> Maybe.map (viewTaskList model)
+                |> Maybe.withDefault (text "No open task list")
     in
         div []
-            [ Maybe.withDefault (text "No open task list") taskListView ]
+            [ taskListView ]
