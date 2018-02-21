@@ -64,3 +64,13 @@ createTask id creationDate title =
     , dueDate = NoDueDate
     , description = ""
     }
+
+
+isCompleted : Task -> Bool
+isCompleted task =
+    case task.completion of
+        ToDo ->
+            False
+
+        Done _ ->
+            True

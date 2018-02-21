@@ -17,20 +17,14 @@ main =
         }
 
 
-type alias TodoModel =
-    { taskLists : List TaskList
-    , tasks : List Task
-    }
-
-
-type alias ViewModel =
-    { openTaskListId : TaskListId
-    }
-
-
 type alias Model =
-    { todo : TodoModel
-    , view : ViewModel
+    { todo :
+        { taskLists : List TaskList
+        , tasks : List Task
+        }
+    , view :
+        { openTaskListId : TaskListId
+        }
     }
 
 
@@ -80,7 +74,17 @@ type Msg
     | ViewMsg ViewMsg
 
 
-updateTodo : TodoMsg -> TodoModel -> TodoModel
+asTasksIn : { b | tasks : a } -> a -> { b | tasks : a }
+asTasksIn rec tasks =
+    { rec | tasks = tasks }
+
+
+asTodoIn : { b | todo : a } -> a -> { b | todo : a }
+asTodoIn rec todo =
+    { rec | todo = todo }
+
+
+updateTodo : TodoMsg -> Model -> Model
 updateTodo msg model =
     case msg of
         CreateTask title taskListRef ->
@@ -92,9 +96,11 @@ updateTodo msg model =
                         title
 
                 tasks =
-                    task :: model.tasks
+                    task :: model.todo.tasks
             in
-                { model | tasks = tasks }
+                tasks
+                    |> asTasksIn model.todo
+                    |> asTodoIn model
 
         _ ->
             model
@@ -104,7 +110,7 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         TodoMsg msg ->
-            { model | todo = updateTodo msg model.todo }
+            updateTodo msg model
 
         _ ->
             model
@@ -131,7 +137,64 @@ viewTaskList model taskList =
 
 viewInlineTask : Task -> Html Msg
 viewInlineTask task =
-    div [] [ text task.title ]
+    div []
+        [ input [ type_ "checkbox", checked (isCompleted task) ] []
+        , text task.title
+        , div []
+            [ viewInlineTaskDueDate task
+            , viewInlineTaskReminder task
+            ]
+        ]
+
+
+viewInlineTaskDueDate : Task -> Html Msg
+viewInlineTaskDueDate task =
+    div []
+        (case task.dueDate of
+            NoDueDate ->
+                []
+
+            DueDate date ->
+                [ text "Due "
+                , text (toString date.day)
+                , text "/"
+                , text (toString date.month)
+                , text "/"
+                , text (toString date.year)
+                ]
+
+            RecurringDueDate date recurrence ->
+                [ text "Due "
+                , text (toString date.day)
+                , text "/"
+                , text (toString date.month)
+                , text "/"
+                , text (toString date.year)
+                , text " (recurring)"
+                ]
+        )
+
+
+viewInlineTaskReminder : Task -> Html Msg
+viewInlineTaskReminder task =
+    div []
+        (case task.reminder of
+            NoReminder ->
+                []
+
+            Reminder date time ->
+                [ text "Reminder on "
+                , text (toString date.day)
+                , text "/"
+                , text (toString date.month)
+                , text "/"
+                , text (toString date.year)
+                , text " at "
+                , text (toString time.hour)
+                , text ":"
+                , text (toString time.minute)
+                ]
+        )
 
 
 view : Model -> Html Msg
