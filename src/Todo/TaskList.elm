@@ -8,7 +8,7 @@ type alias TaskList =
     { id : TaskListId
     , title : TaskListTitle
     , icon : TaskListIcon
-    , taskRefs : List TaskId
+    , taskIds : List TaskId
     , sortOrder : SortOrder
     }
 

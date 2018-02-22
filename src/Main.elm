@@ -39,7 +39,13 @@ init =
             [ { id = "today"
               , title = "Today"
               , icon = NoTaskListIcon
-              , taskRefs = []
+              , taskIds = []
+              , sortOrder = CustomOrder
+              }
+            , { id = "someday"
+              , title = "Someday"
+              , icon = NoTaskListIcon
+              , taskIds = []
               , sortOrder = CustomOrder
               }
             ]
@@ -70,14 +76,10 @@ type TodoMsg
     | DeleteTaskList TaskListId
 
 
-type ViewMsg
-    = OpenTaskList TaskListId
-    | OpenTask TaskId
-
-
 type Msg
     = TodoMsg TodoMsg
-    | ViewMsg ViewMsg
+    | OpenTaskList TaskListId
+    | OpenTask TaskId
 
 
 updateTodo : TodoMsg -> TodoModel -> TodoModel
@@ -107,39 +109,63 @@ update msg model =
         TodoMsg msg ->
             { model | todo = updateTodo msg model.todo }
 
-        ViewMsg (OpenTask taskId) ->
+        OpenTaskList taskListId ->
+            let
+                view =
+                    model.view
+            in
+                { model | view = { view | openTaskListId = taskListId } }
+
+        OpenTask taskId ->
             let
                 view =
                     model.view
             in
                 { model | view = { view | openTaskId = Just taskId } }
 
-        _ ->
-            model
+
+viewAllTaskLists : Model -> Html Msg
+viewAllTaskLists model =
+    let
+        viewTaskListTitle taskList =
+            div [ onClick (OpenTaskList taskList.id) ]
+                [ text taskList.title ]
+    in
+        model.todo.taskLists
+            |> List.map viewTaskListTitle
+            |> div []
 
 
 viewTaskList : Model -> TaskList -> Html Msg
 viewTaskList model taskList =
-    div []
-        [ div
-            [ style
-                [ backgroundColor "blue"
-                , color "white"
+    let
+        isInTaskList task =
+            List.member task.id taskList.taskIds
+
+        tasks =
+            model.todo.tasks
+                |> List.filter isInTaskList
+    in
+        div []
+            [ div
+                [ style
+                    [ backgroundColor "blue"
+                    , color "white"
+                    ]
+                ]
+                [ text taskList.title ]
+            , div []
+                (List.map viewInlineTask tasks)
+            , div []
+                [ button [ (onClick (TodoMsg (CreateTask "abc" "def"))) ]
+                    [ text "Add task" ]
                 ]
             ]
-            [ text taskList.title ]
-        , div []
-            (List.map viewInlineTask model.todo.tasks)
-        , div []
-            [ button [ (onClick (TodoMsg (CreateTask "abc" "def"))) ]
-                [ text "Add task" ]
-            ]
-        ]
 
 
 viewInlineTask : Task -> Html Msg
 viewInlineTask task =
-    div [ onClick (ViewMsg (OpenTask task.id)) ]
+    div [ onClick (OpenTask task.id) ]
         [ input [ type_ "checkbox", checked (isCompleted task) ] []
         , text task.title
         , div []
@@ -208,6 +234,9 @@ viewTask task =
 view : Model -> Html Msg
 view model =
     let
+        allTaskListsView =
+            viewAllTaskLists model
+
         isOpenTaskList taskList =
             taskList.id == model.view.openTaskListId
 
@@ -240,6 +269,7 @@ view model =
                 |> Maybe.withDefault (text "No open task")
     in
         div []
-            [ taskListView
+            [ allTaskListsView
+            , taskListView
             , openTaskView
             ]
