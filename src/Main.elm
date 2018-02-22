@@ -17,13 +17,17 @@ main =
         }
 
 
+type alias TodoModel =
+    { taskLists : List TaskList
+    , tasks : List Task
+    }
+
+
 type alias Model =
-    { todo :
-        { taskLists : List TaskList
-        , tasks : List Task
-        }
+    { todo : TodoModel
     , view :
         { openTaskListId : TaskListId
+        , openTaskId : Maybe TaskId
         }
     }
 
@@ -43,6 +47,7 @@ init =
         }
     , view =
         { openTaskListId = "today"
+        , openTaskId = Just "abc"
         }
     }
 
@@ -67,6 +72,7 @@ type TodoMsg
 
 type ViewMsg
     = OpenTaskList TaskListId
+    | OpenTask TaskId
 
 
 type Msg
@@ -74,20 +80,10 @@ type Msg
     | ViewMsg ViewMsg
 
 
-asTasksIn : { b | tasks : a } -> a -> { b | tasks : a }
-asTasksIn rec tasks =
-    { rec | tasks = tasks }
-
-
-asTodoIn : { b | todo : a } -> a -> { b | todo : a }
-asTodoIn rec todo =
-    { rec | todo = todo }
-
-
-updateTodo : TodoMsg -> Model -> Model
+updateTodo : TodoMsg -> TodoModel -> TodoModel
 updateTodo msg model =
     case msg of
-        CreateTask title taskListRef ->
+        CreateTask title taskListId ->
             let
                 task =
                     createTask
@@ -95,12 +91,11 @@ updateTodo msg model =
                         { day = 1, month = 12, year = 2017 }
                         title
 
+                -- FIXME add task to task list
                 tasks =
-                    task :: model.todo.tasks
+                    task :: model.tasks
             in
-                tasks
-                    |> asTasksIn model.todo
-                    |> asTodoIn model
+                { model | tasks = tasks }
 
         _ ->
             model
@@ -110,7 +105,14 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         TodoMsg msg ->
-            updateTodo msg model
+            { model | todo = updateTodo msg model.todo }
+
+        ViewMsg (OpenTask taskId) ->
+            let
+                view =
+                    model.view
+            in
+                { model | view = { view | openTaskId = Just taskId } }
 
         _ ->
             model
@@ -137,7 +139,7 @@ viewTaskList model taskList =
 
 viewInlineTask : Task -> Html Msg
 viewInlineTask task =
-    div []
+    div [ onClick (ViewMsg (OpenTask task.id)) ]
         [ input [ type_ "checkbox", checked (isCompleted task) ] []
         , text task.title
         , div []
@@ -149,13 +151,14 @@ viewInlineTask task =
 
 viewInlineTaskDueDate : Task -> Html Msg
 viewInlineTaskDueDate task =
-    div []
-        (case task.dueDate of
-            NoDueDate ->
+    case task.dueDate of
+        NoDueDate ->
+            div []
                 []
 
-            DueDate date ->
-                [ text "Due "
+        DueDate date ->
+            div []
+                [ text "📅 "
                 , text (toString date.day)
                 , text "/"
                 , text (toString date.month)
@@ -163,8 +166,9 @@ viewInlineTaskDueDate task =
                 , text (toString date.year)
                 ]
 
-            RecurringDueDate date recurrence ->
-                [ text "Due "
+        RecurringDueDate date recurrence ->
+            div []
+                [ text "📅 "
                 , text (toString date.day)
                 , text "/"
                 , text (toString date.month)
@@ -172,18 +176,18 @@ viewInlineTaskDueDate task =
                 , text (toString date.year)
                 , text " (recurring)"
                 ]
-        )
 
 
 viewInlineTaskReminder : Task -> Html Msg
 viewInlineTaskReminder task =
-    div []
-        (case task.reminder of
-            NoReminder ->
+    case task.reminder of
+        NoReminder ->
+            div []
                 []
 
-            Reminder date time ->
-                [ text "Reminder on "
+        Reminder date time ->
+            div []
+                [ text "🔔 "
                 , text (toString date.day)
                 , text "/"
                 , text (toString date.month)
@@ -194,7 +198,11 @@ viewInlineTaskReminder task =
                 , text ":"
                 , text (toString time.minute)
                 ]
-        )
+
+
+viewTask : Task -> Html Msg
+viewTask task =
+    task |> toString |> text
 
 
 view : Model -> Html Msg
@@ -212,6 +220,26 @@ view model =
             openTaskList
                 |> Maybe.map (viewTaskList model)
                 |> Maybe.withDefault (text "No open task list")
+
+        isOpenTask task =
+            case model.view.openTaskId of
+                Just taskId ->
+                    task.id == taskId
+
+                Nothing ->
+                    False
+
+        openTask =
+            model.todo.tasks
+                |> List.filter isOpenTask
+                |> List.head
+
+        openTaskView =
+            openTask
+                |> Maybe.map viewTask
+                |> Maybe.withDefault (text "No open task")
     in
         div []
-            [ taskListView ]
+            [ taskListView
+            , openTaskView
+            ]
