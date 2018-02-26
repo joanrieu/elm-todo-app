@@ -39,13 +39,11 @@ init =
             [ { id = "today"
               , title = "Today"
               , icon = NoTaskListIcon
-              , taskIds = []
               , sortOrder = CustomOrder
               }
             , { id = "someday"
               , title = "Someday"
               , icon = NoTaskListIcon
-              , taskIds = []
               , sortOrder = CustomOrder
               }
             ]
@@ -90,10 +88,10 @@ updateTodo msg model =
                 task =
                     createTask
                         "mytask"
+                        taskListId
                         { day = 1, month = 12, year = 2017 }
                         title
 
-                -- FIXME add task to task list
                 tasks =
                     task :: model.tasks
             in
@@ -139,12 +137,9 @@ viewAllTaskLists model =
 viewTaskList : Model -> TaskList -> Html Msg
 viewTaskList model taskList =
     let
-        isInTaskList task =
-            List.member task.id taskList.taskIds
-
         tasks =
             model.todo.tasks
-                |> List.filter isInTaskList
+                |> List.filter (\t -> t.taskListId == taskList.id)
     in
         div []
             [ div
@@ -157,7 +152,7 @@ viewTaskList model taskList =
             , div []
                 (List.map viewInlineTask tasks)
             , div []
-                [ button [ (onClick (TodoMsg (CreateTask "abc" "def"))) ]
+                [ button [ (onClick (TodoMsg (CreateTask "abc" model.view.openTaskListId))) ]
                     [ text "Add task" ]
                 ]
             ]

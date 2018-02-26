@@ -1,6 +1,5 @@
 module Todo.TaskList exposing (..)
 
-import Todo.Task exposing (..)
 import Todo.Boundary exposing (..)
 
 
@@ -8,7 +7,6 @@ type alias TaskList =
     { id : TaskListId
     , title : TaskListTitle
     , icon : TaskListIcon
-    , taskIds : List TaskId
     , sortOrder : SortOrder
     }
 

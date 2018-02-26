@@ -1,10 +1,12 @@
 module Todo.Task exposing (..)
 
+import Todo.TaskList exposing (TaskListId)
 import Todo.Boundary exposing (..)
 
 
 type alias Task =
     { id : TaskId
+    , taskListId : TaskListId
     , creationDate : CreationDate
     , title : TaskTitle
     , completion : Completion
@@ -54,9 +56,10 @@ type alias TaskDescription =
     MultiLineMaybeBlankText
 
 
-createTask : TaskId -> CreationDate -> TaskTitle -> Task
-createTask id creationDate title =
+createTask : TaskId -> TaskListId -> CreationDate -> TaskTitle -> Task
+createTask id taskListId creationDate title =
     { id = id
+    , taskListId = taskListId
     , title = title
     , creationDate = creationDate
     , completion = ToDo
