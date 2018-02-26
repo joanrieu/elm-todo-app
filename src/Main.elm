@@ -51,7 +51,7 @@ init =
         }
     , view =
         { openTaskListId = "today"
-        , openTaskId = Just "abc"
+        , openTaskId = Nothing
         }
     }
 
