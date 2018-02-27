@@ -6,6 +6,7 @@ import Html.Events exposing (..)
 import Style exposing (..)
 import Todo.Task exposing (..)
 import Todo.TaskList exposing (..)
+import Todo.Boundary exposing (..)
 
 
 main : Program Never Model Msg
@@ -20,6 +21,7 @@ main =
 type alias TodoModel =
     { taskLists : List TaskList
     , tasks : List Task
+    , date : Date
     }
 
 
@@ -48,6 +50,8 @@ init =
               }
             ]
         , tasks = []
+        , date =
+            { day = 1, month = 12, year = 2017 }
         }
     , view =
         { openTaskListId = "today"
@@ -89,13 +93,23 @@ updateTodo msg model =
                     createTask
                         "mytask"
                         taskListId
-                        { day = 1, month = 12, year = 2017 }
+                        model.date
                         title
-
-                tasks =
-                    task :: model.tasks
             in
-                { model | tasks = tasks }
+                { model | tasks = task :: model.tasks }
+
+        CheckTask taskId ->
+            let
+                mapTask task =
+                    if task.id == taskId then
+                        { task | completion = Done model.date }
+                    else
+                        task
+            in
+                { model
+                    | tasks =
+                        List.map mapTask model.tasks
+                }
 
         _ ->
             model
