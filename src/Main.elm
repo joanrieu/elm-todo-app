@@ -6,7 +6,7 @@ import Html.Events exposing (..)
 import Style exposing (..)
 import Todo.Task exposing (..)
 import Todo.TaskList exposing (..)
-import Todo.Boundary exposing (..)
+import Todo.Command exposing (..)
 
 
 main : Program Never Model Msg
@@ -16,13 +16,6 @@ main =
         , view = view
         , update = update
         }
-
-
-type alias TodoModel =
-    { taskLists : List TaskList
-    , tasks : List Task
-    , date : Date
-    }
 
 
 type alias Model =
@@ -60,59 +53,10 @@ init =
     }
 
 
-type TodoMsg
-    = CreateTask TaskTitle TaskListId
-    | CheckTask TaskId
-    | UncheckTask TaskId
-    | ChangeTaskTitle TaskId TaskTitle
-    | ChangeTaskReminder TaskId Reminder
-    | ChangeTaskDueDate TaskId DueDate
-    | ChangeTaskDescription TaskId TaskDescription
-    | DeleteTask TaskId
-    | CreateTaskList TaskListTitle
-    | ChangeTaskListTitle TaskListId TaskListTitle
-    | ChangeTaskListIcon TaskListId TaskListIcon
-    | MoveTaskIntoList TaskId TaskListId
-    | ReorderTaskInsideList TaskId Int
-    | SortTaskList TaskId SortOrder
-    | DeleteTaskList TaskListId
-
-
 type Msg
     = TodoMsg TodoMsg
     | OpenTaskList TaskListId
     | OpenTask TaskId
-
-
-updateTodo : TodoMsg -> TodoModel -> TodoModel
-updateTodo msg model =
-    case msg of
-        CreateTask title taskListId ->
-            let
-                task =
-                    createTask
-                        "mytask"
-                        taskListId
-                        model.date
-                        title
-            in
-                { model | tasks = task :: model.tasks }
-
-        CheckTask taskId ->
-            let
-                mapTask task =
-                    if task.id == taskId then
-                        { task | completion = Done model.date }
-                    else
-                        task
-            in
-                { model
-                    | tasks =
-                        List.map mapTask model.tasks
-                }
-
-        _ ->
-            model
 
 
 update : Msg -> Model -> Model
