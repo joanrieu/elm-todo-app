@@ -119,7 +119,17 @@ viewTaskList model taskList =
 viewInlineTask : Task -> Html Msg
 viewInlineTask task =
     div [ onClick (OpenTask task.id) ]
-        [ input [ type_ "checkbox", checked (isCompleted task) ] []
+        [ input
+            [ type_ "checkbox"
+            , checked (isCompleted task)
+            , onClick
+                (if isCompleted task then
+                    TodoMsg (UncheckTask task.id)
+                 else
+                    TodoMsg (CheckTask task.id)
+                )
+            ]
+            []
         , text task.title
         , div []
             [ viewInlineTaskDueDate task
