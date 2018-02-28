@@ -3,7 +3,6 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Style exposing (..)
 import Todo.Task exposing (..)
 import Todo.TaskList exposing (..)
 import Todo.Command exposing (..)
@@ -102,8 +101,8 @@ viewTaskList model taskList =
         div []
             [ div
                 [ style
-                    [ backgroundColor "blue"
-                    , color "white"
+                    [ ( "background-color", "blue" )
+                    , ( "color", "white" )
                     ]
                 ]
                 [ text taskList.title ]
@@ -231,7 +230,14 @@ view model =
                 |> Maybe.map viewTask
                 |> Maybe.withDefault (text "No open task")
     in
-        div []
+        div
+            [ style
+                [ ( "width", "100vw" )
+                , ( "height", "100vh" )
+                , ( "display", "grid" )
+                , ( "grid-template-columns", "20em auto 20em" )
+                ]
+            ]
             [ allTaskListsView
             , taskListView
             , openTaskView
