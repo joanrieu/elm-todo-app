@@ -83,7 +83,10 @@ viewAllTaskLists : Model -> Html Msg
 viewAllTaskLists model =
     let
         viewTaskListTitle taskList =
-            div [ onClick (OpenTaskList taskList.id) ]
+            div
+                [ style [ ( "margin", "1rem" ) ]
+                , onClick (OpenTaskList taskList.id)
+                ]
                 [ text taskList.title ]
     in
         model.todo.taskLists
@@ -103,13 +106,19 @@ viewTaskList model taskList =
                 [ style
                     [ ( "background-color", "blue" )
                     , ( "color", "white" )
+                    , ( "font-size", "3em" )
+                    , ( "padding", "2rem" )
                     ]
                 ]
                 [ text taskList.title ]
             , div []
                 (List.map viewInlineTask tasks)
-            , div []
-                [ button [ (onClick (TodoMsg (CreateTask "abc" model.view.openTaskListId))) ]
+            , div
+                [ style [ ( "margin", "1rem" ) ] ]
+                [ button
+                    [ style [ ( "padding", ".2rem .5rem" ) ]
+                    , (onClick (TodoMsg (CreateTask "abc" model.view.openTaskListId)))
+                    ]
                     [ text "Add task" ]
                 ]
             ]
@@ -117,7 +126,10 @@ viewTaskList model taskList =
 
 viewInlineTask : Task -> Html Msg
 viewInlineTask task =
-    div [ onClick (OpenTask task.id) ]
+    div
+        [ onClick (OpenTask task.id)
+        , style [ ( "margin", "1rem" ) ]
+        ]
         [ input
             [ type_ "checkbox"
             , checked (isCompleted task)
@@ -229,6 +241,8 @@ view model =
             openTask
                 |> Maybe.map viewTask
                 |> Maybe.withDefault (text "No open task")
+                |> List.singleton
+                |> div [ style [ ( "padding", "1rem" ) ] ]
     in
         div
             [ style
