@@ -29,22 +29,7 @@ type alias Model =
 init : Model
 init =
     { todo =
-        { taskLists =
-            [ { id = "today"
-              , title = "Today"
-              , icon = NoTaskListIcon
-              , sortOrder = CustomOrder
-              }
-            , { id = "someday"
-              , title = "Someday"
-              , icon = NoTaskListIcon
-              , sortOrder = CustomOrder
-              }
-            ]
-        , tasks = []
-        , date =
-            { day = 1, month = 12, year = 2017 }
-        }
+        Todo.Command.init
     , view =
         { openTaskListId = "today"
         , openTaskId = Nothing

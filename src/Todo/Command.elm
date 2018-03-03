@@ -30,6 +30,26 @@ type TodoMsg
     | DeleteTaskList TaskListId
 
 
+init : TodoModel
+init =
+    { taskLists =
+        [ { id = "today"
+          , title = "Today"
+          , icon = NoTaskListIcon
+          , sortOrder = CustomOrder
+          }
+        , { id = "someday"
+          , title = "Someday"
+          , icon = NoTaskListIcon
+          , sortOrder = CustomOrder
+          }
+        ]
+    , tasks = []
+    , date =
+        { day = 1, month = 12, year = 2017 }
+    }
+
+
 updateTodo : TodoMsg -> TodoModel -> TodoModel
 updateTodo msg model =
     case msg of
