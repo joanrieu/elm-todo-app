@@ -22,6 +22,7 @@ type alias Model =
     , view :
         { openTaskListId : TaskListId
         , openTaskId : Maybe TaskId
+        , newTaskTitle : String
         }
     }
 
@@ -33,6 +34,7 @@ init =
     , view =
         { openTaskListId = "today"
         , openTaskId = Nothing
+        , newTaskTitle = ""
         }
     }
 
@@ -41,6 +43,8 @@ type Msg
     = TodoMsg TodoMsg
     | OpenTaskList TaskListId
     | OpenTask TaskId
+    | UpdateNewTaskTitle String
+    | CreateTask
 
 
 update : Msg -> Model -> Model
@@ -62,6 +66,29 @@ update msg model =
                     model.view
             in
                 { model | view = { view | openTaskId = Just taskId } }
+
+        UpdateNewTaskTitle title ->
+            let
+                view =
+                    model.view
+            in
+                { model | view = { view | newTaskTitle = title } }
+
+        CreateTask ->
+            let
+                view =
+                    model.view
+            in
+                { model
+                    | todo =
+                        updateTodo
+                            (Todo.Command.CreateTask
+                                model.view.newTaskTitle
+                                model.view.openTaskListId
+                            )
+                            model.todo
+                    , view = { view | newTaskTitle = "" }
+                }
 
 
 viewAllTaskLists : Model -> Html Msg
@@ -100,9 +127,14 @@ viewTaskList model taskList =
                 (List.map viewInlineTask tasks)
             , div
                 [ style [ ( "margin", "1rem" ) ] ]
-                [ button
+                [ input
+                    [ onInput UpdateNewTaskTitle
+                    , value model.view.newTaskTitle
+                    ]
+                    []
+                , button
                     [ style [ ( "padding", ".2rem .5rem" ) ]
-                    , (onClick (TodoMsg (CreateTask "abc" model.view.openTaskListId)))
+                    , (onClick CreateTask)
                     ]
                     [ text "Add task" ]
                 ]
